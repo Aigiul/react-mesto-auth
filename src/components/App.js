@@ -10,6 +10,7 @@ function App() {
   const [isAddPlacePopupOpen, setIsAddPlacePopupOpen] = useState(false);
   const [isEditAvatarPopupOpen, setIsEditAvatarPopupOpen] = useState(false);
   const [isConfirmationPopupOpen, setIsConfirmationPopupOpen] = useState(false);
+  const [selectedCard, setSelectedCard] = useState(false);
 
   //обработчики событий попапов
   const handleEditAvatarClick = () => {
@@ -28,11 +29,16 @@ function App() {
     setIsConfirmationPopupOpen(!isConfirmationPopupOpen);
   }
 
+  const handleCardClick = (card) => {
+    setSelectedCard(card);
+  };
+
   const closeAllPopups = () => {
     setIsEditAvatarPopupOpen(false);
     setIsEditProfilePopupOpen(false);
     setIsAddPlacePopupOpen(false);
     setIsConfirmationPopupOpen(false);
+    setSelectedCard(false);
   }
 
   return (
@@ -42,7 +48,9 @@ function App() {
         onEditAvatar={handleEditAvatarClick}
         onEditProfile={handleEditProfileClick}
         onAddPlace={handleAddPlaceClick}
-        onConfirm={handleConfirmClick}>
+        onConfirm={handleConfirmClick}
+        onCardClick={handleCardClick}
+      >
       </Main>
       <Footer />
       <PopupWithForm 
@@ -57,14 +65,24 @@ function App() {
         <span className="popup__error-message input-popup-subtitle-error" />
         <button type="submit" className="popup__save-button" disabled>Сохранить</button>
       </PopupWithForm>
-      <PopupWithForm title="Новое место" name="place" isOpen={isAddPlacePopupOpen} onClose={closeAllPopups}>
+      <PopupWithForm
+        title="Новое место"
+        name="place"
+        isOpen={isAddPlacePopupOpen}
+        onClose={closeAllPopups}
+      >
         <input type="text" className="popup__input" id="input-popup-title-card" defaultValue placeholder="Название" name="name" minLength={2} maxLength={30} required />
         <span className="popup__error-message input-popup-title-card-error" />
         <input type="URL" className="popup__input" id="input-popup-link-card" defaultValue placeholder="Ссылка на картинку" name="link" required />
         <span className="popup__error-message input-popup-link-card-error" />
         <button type="submit" className="popup__save-button" disabled>Создать</button>
       </PopupWithForm>  
-      <ImagePopup></ImagePopup>
+      <ImagePopup
+        card={selectedCard}
+        onClose={() => {
+          setSelectedCard(false);
+        }}
+      ></ImagePopup>
       <PopupWithForm
         title="Вы уверены?"
         name="confirmation"

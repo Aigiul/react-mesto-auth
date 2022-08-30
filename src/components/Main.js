@@ -1,28 +1,23 @@
 import React, { useEffect, useState } from 'react';
 import {api} from '../utils/Api';
+import Card from './Card';
 
-function Main({ onEditAvatar, onEditProfile, onAddPlace }) {
+function Main({ onEditAvatar, onEditProfile, onAddPlace, onCardClick }) {
   const [userName, setUserName] = useState("");
   const [userDescription, setUserDescription] = useState("");
   const [userAvatar, setUserAvatar] = useState("");
   const [cards, setCards] = useState([]);
 
   useEffect(() => {
-    api
-      .getUserInfo()
-      .then((data) => {
-        setUserName(data.name);
-        setUserDescription(data.about);
-        setUserAvatar(data.avatar);
-      })
-      .catch((err) => {
-        console.error(err);
-      });
-    
-    api
-      .getInitialCards()
-      .then((data) => {
-        setCards(data);
+    if (userName) {
+      return;
+    }
+    Promise.all([api.getUserInfo(), api.getInitialCards()])
+      .then(([user, cards]) => {
+        setUserName(user.name);
+        setUserDescription(user.about);
+        setUserAvatar(user.avatar);
+        setCards(cards);
       })
       .catch((err) => {
         console.error(err);
@@ -43,20 +38,8 @@ function Main({ onEditAvatar, onEditProfile, onAddPlace }) {
         <button type="button" className='profile__add-button' onClick={onAddPlace}></button>
       </section>
       <section className='gallery' aria-label="галерея">
-        <ul className='cards'>{cards.map((data) => {
-          return (
-            <li className="card" key={data._id}>
-              <button type="button" className="card__delete-button" />
-              <img className="card__image" src={data.link} alt="#" />
-              <div className="card__info">
-                <h2 className="card__title">{data.name}</h2>
-                <div className="card__like-number-container">
-                  <button type="button" className="card__like" />
-                  <span className="card__like-number">{data.likes.length}</span>
-                </div>
-              </div>
-            </li>
-          );
+        <ul className="cards">{cards.map((data) => {
+          return <Card card={data} key={data._id} onCardClick={onCardClick} />;
         })}
         </ul>
       </section>
