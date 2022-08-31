@@ -1,8 +1,8 @@
 import React from "react";
 
-function ImagePopup ({ card, onClose }) {
+function ImagePopup ({ card, onClose, isImageOpen }) {
   return (
-    <div className={`popup popup_view-card ${card ? "popup_opened" : ""}`}>
+    <div className={`popup popup_view-card ${isImageOpen && "popup_opened"}`}>
       <div className="popup__preview">
         <figure className="popup__figure">
           <img className="popup__image" src={card.link} alt={card.name} />
@@ -11,9 +11,7 @@ function ImagePopup ({ card, onClose }) {
         <button
           type="button"
           className="popup__close-button"
-          onClick={() => {
-          onClose();
-          }}
+          onClick={onClose}
         />
       </div>
     </div>

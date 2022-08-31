@@ -1,6 +1,6 @@
-# Getting Started with Create React App
+# Mesto-React
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+Интерактивный сервис загрузки карточек с фотографиями для обмена ими с другими пользователями, содержащий информацию о профиле пользователя и местах.
 
 ## Available Scripts
 

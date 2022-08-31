@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import {api} from '../utils/Api';
 import Card from './Card';
 
@@ -9,9 +9,6 @@ function Main({ onEditAvatar, onEditProfile, onAddPlace, onCardClick }) {
   const [cards, setCards] = useState([]);
 
   useEffect(() => {
-    if (userName) {
-      return;
-    }
     Promise.all([api.getUserInfo(), api.getInitialCards()])
       .then(([user, cards]) => {
         setUserName(user.name);
@@ -22,7 +19,7 @@ function Main({ onEditAvatar, onEditProfile, onAddPlace, onCardClick }) {
       .catch((err) => {
         console.error(err);
       });
-  });
+  }, []);
 
   return (
     <main className='main'>
