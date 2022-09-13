@@ -3,7 +3,9 @@ import Main from './Main';
 import Footer from './Footer';
 import PopupWithForm from './PopupWithForm';
 import ImagePopup from './ImagePopup';
-import { useState } from 'react';
+import { React, useEffect, useState } from 'react';
+import { CurrentUserContext } from '../contexts/CurrentUserContext';
+import { api } from '../utils/Api';
 
 function App() {
   const [isEditProfilePopupOpen, setIsEditProfilePopupOpen] = useState(false);
@@ -12,6 +14,18 @@ function App() {
   const [isConfirmationPopupOpen, setIsConfirmationPopupOpen] = useState(false);
   const [selectedCard, setSelectedCard] = useState({});
   const [isImageOpen, setIsImageOpen] = useState(false);
+  const [currentUser, setCurrentUser] = useState({});
+  
+  useEffect(() => {
+    api.getUserInfo()
+    .then((data) => {
+      setCurrentUser(data);
+    })
+    .catch((err) => {
+      console.error(err);
+    });
+  }, [])
+
 
   //обработчики событий попапов
   const handleEditAvatarClick = () => {
@@ -43,8 +57,10 @@ function App() {
     setIsImageOpen(false);
   }
 
+
+
   return (
-    <>
+    <CurrentUserContext.Provider value={currentUser}>
       <Header />
       <Main
         onEditAvatar={handleEditAvatarClick}
@@ -103,7 +119,7 @@ function App() {
         <input type="url" className="popup__input" id="input-popup-link-avatar" defaultValue placeholder="Ссылка на аватар" name="avatar" required />
         <span className="popup__error-message input-popup-link-avatar-error" />
       </PopupWithForm>
-    </>
+    </CurrentUserContext.Provider>
   );
 }
 

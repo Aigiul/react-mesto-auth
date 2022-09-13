@@ -43,6 +43,11 @@ class Api {
     .then(this._getJsonOrError)
   }
 
+  changeLikeCardStatus(cardId, setIsLiked) {
+    this._status = setIsLiked ? this.putLike(cardId) : this.deleteLike(cardId);
+    return this._status;
+  }
+
   //метод простановки лайка у карточки
 
   putLike(cardId) {
