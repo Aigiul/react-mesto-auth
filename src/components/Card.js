@@ -1,7 +1,7 @@
-import { CurrentUserContext } from "../contexts/CurrentUserContext";
-import { useContext } from "react";
+import { CurrentUserContext } from '../contexts/CurrentUserContext';
+import { useContext } from 'react';
 
-function Card({ card, onCardClick, onCardLike }) {
+function Card({ card, onCardClick, onCardLike, onCardDelete }) {
   const currentUser = useContext(CurrentUserContext);
 
   const isOwn = card.owner._id === currentUser._id;
@@ -15,6 +15,10 @@ const handleLikeClick = () => {
   onCardLike(card);
 }
 
+const handleDeleteClick = () => {
+  onCardDelete(card);
+}
+
 const cardDeleteButtonClassName = (
   `card__delete-button ${isOwn ? '' : 'card__delete-button_hidden'}`
 );
@@ -23,7 +27,7 @@ const cardDeleteButtonClassName = (
 
   return (
     <li className="card">
-      <button type="button" className={cardDeleteButtonClassName} />
+      <button type="button" className={cardDeleteButtonClassName} onClick={handleDeleteClick} />
       <img 
         className="card__image"
         src={card.link}

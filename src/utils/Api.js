@@ -1,4 +1,4 @@
-import { config } from "./constants.js";
+import { config } from './constants.js';
 class Api {
   constructor (host, token, cardId) {
     this._host = host;
