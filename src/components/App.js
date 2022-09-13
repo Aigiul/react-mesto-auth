@@ -7,6 +7,7 @@ import { useEffect, useState } from 'react';
 import { CurrentUserContext } from '../contexts/CurrentUserContext';
 import { api } from '../utils/Api';
 import AddPlacePopup from './AddPlacePopup';
+import EditProfilePopup from './EditProfilePopup';
 
 function App() {
   const [isEditProfilePopupOpen, setIsEditProfilePopupOpen] = useState(false);
@@ -107,6 +108,17 @@ function handleCardDelete(card) {
     })
   }
 
+  function handleUpdateUser(userData) {
+    api.addProfileInfo(userData)
+    .then((data) => {
+      setCurrentUser(data);
+      closeAllPopups();
+    })
+    .catch((err)=> {
+      console.error(err);
+    })
+  }
+
 
 
   return (
@@ -125,18 +137,11 @@ function handleCardDelete(card) {
       >
       </Main>
       <Footer />
-      <PopupWithForm 
-        title="Редактировать профиль" 
-        name="profile"
-        buttonText="Сохранить"
+      <EditProfilePopup
         isOpen={isEditProfilePopupOpen}
         onClose={closeAllPopups}
-      >
-        <input type="text" className="popup__input" id="input-popup-title" defaultValue placeholder="Имя" name="name" minLength={2} maxLength={40}  required />
-        <span className="popup__error-message input-popup-title-error" />
-        <input type="text" className="popup__input" id="input-popup-subtitle" defaultValue placeholder="O себе" name="about" minLength={2} maxLength={200} required />
-        <span className="popup__error-message input-popup-subtitle-error" />
-      </PopupWithForm>
+        onUpdateUser={handleUpdateUser}
+      />
       <ImagePopup
         isImageOpen={isImageOpen}
         card={selectedCard}
@@ -151,16 +156,7 @@ function handleCardDelete(card) {
       >
         <h2 className="popup__title-confirmation"></h2>
       </PopupWithForm>
-      <PopupWithForm
-        title="Обновить аватар"
-        name="avatar"
-        buttonText="Сохранить"
-        isOpen={isEditAvatarPopupOpen}
-        onClose={closeAllPopups}
-      >
-        <input type="url" className="popup__input" id="input-popup-link-avatar" defaultValue placeholder="Ссылка на аватар" name="avatar" required />
-        <span className="popup__error-message input-popup-link-avatar-error" />
-      </PopupWithForm>
+      
       <AddPlacePopup
         isAddPlacePopupOpen={isAddPlacePopupOpen}
         closeAllPopups={closeAllPopups}
