@@ -1,6 +1,6 @@
-import { config } from './constants.js';
+import { config } from "./constants.js";
 class Api {
-  constructor (host, token, cardId) {
+  constructor(host, token, cardId) {
     this._host = host;
     this._token = token;
     this._cardId = cardId;
@@ -9,7 +9,7 @@ class Api {
   }
 
   _getJsonOrError(res) {
-    if (res.ok){
+    if (res.ok) {
       return res.json();
     }
     return Promise.reject(`Ошибка: ${res.status}`);
@@ -18,29 +18,27 @@ class Api {
   _getHeaders() {
     return {
       authorization: this._token,
-      'Content-Type': 'application/json',
-    }
+      "Content-Type": "application/json",
+    };
   }
 
   // метод получения списка карточек
 
   getInitialCards() {
     return fetch(`${this._host}/cards`, {
-      method: 'GET',
+      method: "GET",
       headers: this._getHeaders(),
-    })
-    .then(this._getJsonOrError)
+    }).then(this._getJsonOrError);
   }
 
   //метод добавления карточки на сервер
 
   addCard(data) {
     return fetch(`${this._host}/cards`, {
-      method: 'POST',
+      method: "POST",
       headers: this._getHeaders(),
       body: JSON.stringify(data),
-    })
-    .then(this._getJsonOrError)
+    }).then(this._getJsonOrError);
   }
 
   changeLikeCardStatus(cardId, setIsLiked) {
@@ -52,62 +50,56 @@ class Api {
 
   putLike(cardId) {
     return fetch(`${this._host}/cards/${cardId}/likes`, {
-      method: 'PUT',
+      method: "PUT",
       headers: this._getHeaders(),
-    })
-    .then(this._getJsonOrError)
+    }).then(this._getJsonOrError);
   }
 
   //метод удаления лайка у карточки
 
   deleteLike(cardId) {
     return fetch(`${this._host}/cards/${cardId}/likes`, {
-      method: 'DELETE',
+      method: "DELETE",
       headers: this._getHeaders(),
-    })
-    .then(this._getJsonOrError)
+    }).then(this._getJsonOrError);
   }
 
   // метод удаления картчоки
 
   deleteCard(cardId) {
     return fetch(`${this._host}/cards/${cardId}`, {
-      method: 'DELETE',
+      method: "DELETE",
       headers: this._getHeaders(),
-    })
-    .then(this._getJsonOrError)
+    }).then(this._getJsonOrError);
   }
 
   //метод получения информации о юзере
 
   getUserInfo() {
     return fetch(`${this._host}/users/me`, {
-      method: 'GET',
+      method: "GET",
       headers: this._getHeaders(),
-    })
-    .then(this._getJsonOrError)
+    }).then(this._getJsonOrError);
   }
 
   //метод обновления информации о юзере
 
   addProfileInfo(data) {
     return fetch(`${this._host}/users/me`, {
-      method: 'PATCH',
+      method: "PATCH",
       headers: this._getHeaders(),
       body: JSON.stringify(data),
-    })
-    .then(this._getJsonOrError)
+    }).then(this._getJsonOrError);
   }
 
   //метод измененния аватара
 
   newAvatar(data) {
     return fetch(`${this._host}/users/me/avatar`, {
-      method: 'PATCH',
+      method: "PATCH",
       headers: this._getHeaders(),
       body: JSON.stringify(data),
-    })
-    .then(this._getJsonOrError)
+    }).then(this._getJsonOrError);
   }
 }
 

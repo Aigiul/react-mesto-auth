@@ -1,30 +1,28 @@
-import { useState, useEffect } from 'react';
-import PopupWithForm from './PopupWithForm';
+import React, { useState, useEffect } from "react";
+import PopupWithForm from "./PopupWithForm";
 
 function AddPlacePopup({ isAddPlacePopupOpen, closeAllPopups, onSubmit }) {
-  const [name, setName] = useState('');
-  const [link, setLink] = useState('');
+  const [name, setName] = useState("");
+  const [link, setLink] = useState("");
 
   useEffect(() => {
-    setName('');
-    setLink('');
+    setName("");
+    setLink("");
   }, [isAddPlacePopupOpen])
-
-  
 
   return (
     <PopupWithForm
-        title="Новое место"
-        name="place"
-        buttonText="Создать"
-        isOpen={isAddPlacePopupOpen}
-        onClose={closeAllPopups}
-        onSubmit={(event) => {
-          event.preventDefault();
-          onSubmit({ name, link });
-        }}
-      >
-        <input
+      title="Новое место"
+      name="place"
+      buttonText="Создать"
+      isOpen={isAddPlacePopupOpen}
+      onClose={closeAllPopups}
+      onSubmit={(event) => {
+        event.preventDefault();
+        onSubmit({ name, link });
+      }}
+    >
+      <input
         type="text"
         className="popup__input"
         id="input-popup-title-card"
@@ -37,8 +35,8 @@ function AddPlacePopup({ isAddPlacePopupOpen, closeAllPopups, onSubmit }) {
         minLength={2}
         maxLength={30}
         required />
-        <span className="popup__error-message input-popup-title-card-error" />
-        <input
+      <span className="popup__error-message input-popup-title-card-error" />
+      <input
         type="URL"
         className="popup__input"
         id="input-popup-link-card"
@@ -48,8 +46,8 @@ function AddPlacePopup({ isAddPlacePopupOpen, closeAllPopups, onSubmit }) {
         }}
         placeholder="Ссылка на картинку"
         name="link" required />
-        <span className="popup__error-message input-popup-link-card-error" />
-      </PopupWithForm>
+      <span className="popup__error-message input-popup-link-card-error" />
+    </PopupWithForm>
   )
 }
 

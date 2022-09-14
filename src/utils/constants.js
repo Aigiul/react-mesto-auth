@@ -9,8 +9,12 @@ export const config = {
   token: "d1101bf3-b435-4d37-b654-33bba1f912ee",
 };
 export const popupConfirmSelector = ".popup_confirmation";
-export const profileEditButton = document.querySelector(".profile__edit-button");
-export const openPopupButtonAddCard = document.querySelector(".profile__add-button");
+export const profileEditButton = document.querySelector(
+  ".profile__edit-button"
+);
+export const openPopupButtonAddCard = document.querySelector(
+  ".profile__add-button"
+);
 export const nameInput = document.querySelector("#input-popup-title");
 export const jobInput = document.querySelector("#input-popup-subtitle");
 export const formReductElement = document.querySelector(".popup__container");
