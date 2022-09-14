@@ -63,20 +63,18 @@ function App() {
     api
       .deleteCard(card._id)
       .then(() => {
-        const newCards = cards.filter((item) => {
-          return card._id !== item._id;
-        });
-        setCards(newCards);
+        setCards(cards.filter(item => item._id !== card._id));
       })
       .catch((err) => {
         console.error(err);
-      });
+      })
   }
 
+
   //обработчики событий попапов
-  const handleEditAvatarClick = () => {
+  function handleEditAvatarClick() {
     setIsEditAvatarPopupOpen(!isEditAvatarPopupOpen);
-  };
+  }
 
   const handleEditProfileClick = () => {
     setIsEditProfilePopupOpen(!isEditProfilePopupOpen);
