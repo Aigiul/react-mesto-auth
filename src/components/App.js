@@ -3,14 +3,24 @@ import Main from "./Main";
 import Footer from "./Footer";
 import PopupWithForm from "./PopupWithForm";
 import ImagePopup from "./ImagePopup";
-import { useEffect, useState } from "react";
+import { React, useEffect, useState } from "react";
 import { CurrentUserContext } from "../contexts/CurrentUserContext";
 import { api } from "../utils/Api";
+import { Route, Switch, useHistory } from 'react-router-dom';
 import AddPlacePopup from "./AddPlacePopup";
 import EditProfilePopup from "./EditProfilePopup";
 import EditAvatarPopup from "./EditAvatarPopup";
+import Login from './Login.js';
+import Register from "./Register.js";
+import ProtectedRoute from "./ProtectedRoute.js";
+import InfoTooltip from "./InfoTooltip.js";
+import * as auth from "../utils/auth.js";
+import done from "../images/done.svg";
+import fail from "../images/fail.svg";
+
 
 function App() {
+  const [loggedIn, setLoggedIn] = useState(false);
   const [isEditProfilePopupOpen, setIsEditProfilePopupOpen] = useState(false);
   const [isAddPlacePopupOpen, setIsAddPlacePopupOpen] = useState(false);
   const [isEditAvatarPopupOpen, setIsEditAvatarPopupOpen] = useState(false);
@@ -19,6 +29,10 @@ function App() {
   const [isImageOpen, setIsImageOpen] = useState(false);
   const [currentUser, setCurrentUser] = useState({});
   const [cards, setCards] = useState([]);
+  const [userEmail, setUserEmail] = useState('');
+  const [isInfoTooltipOpen, setInfoTooltipOpen] = useState({ opened: false, success: false });
+  const [currentPath, setCurrentPath] = useState('/');
+  const history = useHistory();
 
   useEffect(() => {
     api
@@ -99,6 +113,7 @@ function App() {
     setIsAddPlacePopupOpen(false);
     setIsConfirmationPopupOpen(false);
     setIsImageOpen(false);
+    setInfoTooltipOpen({ opened: false, success: false })
   };
 
   function handleAddPlaceSubmit(card) {
@@ -137,20 +152,108 @@ function App() {
       });
   }
 
+  const handleChangePath = (newPath) => {
+		setCurrentPath(newPath);
+	 }
+
+	// Проверка токена:
+	useEffect(() => {
+    auth.tokenCheck(localStorage.getItem('token'))
+    .then(result => {
+      if (result) {
+        setUserEmail(result.data.email);
+        setLoggedIn(true);
+        history.push('/');
+        setCurrentPath('/');
+      } else {
+        throw new Error ('Ошибка текущего сеанса. Необходимо заново авторизироваться')
+      }
+    })
+    .catch (err => {
+      console.log(`Ошибка входа по токену ${err}`);
+      history.push('/sign-in');
+    })
+  }, [])
+
+	 // Обработчик завершения:
+	 const handleLogout = () => {
+		localStorage.removeItem('token');
+		setUserEmail('');
+		setLoggedIn(false);
+		history.push('/sign-in');
+		setCurrentPath('/sign-in');
+	}
+
+	 // Обработчик регистрации:
+	 const handleSignupSubmit = (email, password) => {
+		 auth.register (email, password)
+		 .then((result) => {
+			 if (result) {
+				 setUserEmail(result.data.email);
+				 setInfoTooltipOpen({ opened: true, success: true });
+				 setLoggedIn(true);
+				 history.push('/sign-in');
+				 setCurrentPath('/sign-in');
+			 }
+			 else {
+				 throw new Error('Не удалось пройти регистрацию');
+			 }
+		 })
+		 .catch( err => {
+		 console.log(`Ошибка регистрации ${err}`);
+		 setInfoTooltipOpen({ opened: true, success: false })
+	 })
+ }
+
+	 // Обработчик авторизации:
+	 const handleSigninSubmit = (email, password) => {
+		 auth.authorization (email, password)
+		 .then((data) => {
+			 if (data.token) {
+				 localStorage.setItem('token', data.token);
+				 setUserEmail(email);
+				 setLoggedIn(true);
+				 history.push('/');
+				 setCurrentPath('/');
+			 }
+			 else {
+				 throw new Error('Не удалось получить токен от сервера');
+			 }
+		 })
+		 .catch( err => {
+			 console.log(alert(`Ошибка авторизации ${err}. Проверьте корректность данных`))
+	 })
+	 }
+
   return (
     <CurrentUserContext.Provider value={currentUser}>
-      <Header />
-      <Main
-        onEditAvatar={handleEditAvatarClick}
-        onEditProfile={handleEditProfileClick}
-        onAddPlace={handleAddPlaceClick}
-        onConfirm={handleConfirmClick}
-        onCardClick={handleCardClick}
-        onCardLike={handleCardLike}
-        onCardDelete={handleCardDelete}
-        cards={cards}
-        onSubmit={handleAddPlaceSubmit}
-      ></Main>
+      <Header
+			userEmail={userEmail}
+			onLogout={handleLogout}
+			path={currentPath} />
+
+			<Switch>
+        <Route path='/sign-in'>
+          <Login onSignin={handleSigninSubmit} onChangePath={handleChangePath}/>
+        </Route>
+        <Route path='/sign-up'>
+          <Register onSignup={handleSignupSubmit} onChangePath={handleChangePath} />
+        </Route>
+
+
+				<ProtectedRoute path='/'
+      		loggedIn={loggedIn}
+					component={Main}
+        	onEditAvatar={handleEditAvatarClick}
+        	onEditProfile={handleEditProfileClick}
+        	onAddPlace={handleAddPlaceClick}
+        	onCardClick={handleCardClick}
+        	onCardLike={handleCardLike}
+        	onCardDelete={handleCardDelete}
+        	cards={cards}
+        	onSubmit={handleAddPlaceSubmit}
+				/>
+			</Switch>
       <Footer />
       <EditProfilePopup
         isOpen={isEditProfilePopupOpen}
@@ -162,6 +265,11 @@ function App() {
         card={selectedCard}
         onClose={closeAllPopups}
       ></ImagePopup>
+      <InfoTooltip
+        isOpen={isInfoTooltipOpen.opened}
+        onClose={closeAllPopups}
+        statusImage={isInfoTooltipOpen.success ? done : fail}
+        title={isInfoTooltipOpen.success ? 'Вы успешно зарегистрировались!':'Что-то пошло не так! Попробуйте ещё раз'} />
       <PopupWithForm
         title="Вы уверены?"
         name="confirmation"
