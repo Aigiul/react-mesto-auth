@@ -77,7 +77,7 @@ function App() {
     api
       .deleteCard(card._id)
       .then(() => {
-        setCards(cards.filter(item => item._id !== card._id));
+        setCards((state) => state.filter((item) => item._id !== card._id));
       })
       .catch((err) => {
         console.error(err);
@@ -115,6 +115,24 @@ function App() {
     setIsImageOpen(false);
     setInfoTooltipOpen({ opened: false, success: false })
   };
+
+
+  // обработчик по Escape
+  const isOpen = isEditAvatarPopupOpen || isEditProfilePopupOpen || isAddPlacePopupOpen || isImageOpen || isInfoTooltipOpen.opened
+
+  useEffect(() => {
+    function closeByEscape(evt) {
+      if(evt.key === 'Escape') {
+        closeAllPopups();
+      }
+    }
+    if(isOpen) { // навешиваем только при открытии
+      document.addEventListener('keydown', closeByEscape);
+      return () => {
+        document.removeEventListener('keydown', closeByEscape);
+      }
+    }
+  }, [isOpen]) 
 
   function handleAddPlaceSubmit(card) {
     api
@@ -158,8 +176,10 @@ function App() {
 
 	// Проверка токена:
 	useEffect(() => {
-    auth.tokenCheck(localStorage.getItem('token'))
-    .then(result => {
+    const token = localStorage.getItem('token')
+    if (!token) return; // нет токена, значит, не нужно делать запрос
+    auth.checkToken(token)
+   .then(result => {
       if (result) {
         setUserEmail(result.data.email);
         setLoggedIn(true);
@@ -277,7 +297,6 @@ function App() {
         isOpen={isConfirmationPopupOpen}
         onClose={closeAllPopups}
       >
-        <h2 className="popup__title-confirmation"></h2>
       </PopupWithForm>
       <EditAvatarPopup
         isOpen={isEditAvatarPopupOpen}
